@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">CampusPulse</a>
+        <nav class="nav-links">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="events.html">Events</a>
+          <a href="my-registrations.html">My Registrations</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboard-page">
+      <div class="container">
+        <section class="dashboard-hero">
+          <div>
+            <p class="eyebrow">Student Portal</p>
+            <h1>Welcome, <span id="studentName">Student</span></h1>
+            <p>Track your registrations and stay updated with all campus events.</p>
+          </div>
+          <a href="events.html" class="btn">Browse Events</a>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card">
+            <h3 id="totalEvents">0</h3>
+            <p>Total Events</p>
+          </article>
+          <article class="stat-card">
+            <h3 id="registeredEvents">0</h3>
+            <p>Registered Events</p>
+          </article>
+          <article class="stat-card">
+            <h3 id="upcomingEvents">0</h3>
+            <p>Upcoming Events</p>
+          </article>
+        </section>
+
+        <section class="dashboard-cards">
+          <a href="events.html" class="card-link">Browse All Events</a>
+          <a href="my-registrations.html" class="card-link">My Registrations</a>
+          <a href="contact.html" class="card-link">Contact Support</a>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/events.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">CampusPulse</a>
+        <nav class="nav-links">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="events.html">Events</a>
+          <a href="my-registrations.html">My Registrations</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="container">
+        <section class="page-header">
+          <div>
+            <p class="eyebrow">Campus Events</p>
+            <h1>Discover and register for events</h1>
+          </div>
+          <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search events" />
+            <select id="filterSelect">
+              <option value="all">All</option>
+              <option value="Technical">Technical</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Academic">Academic</option>
+              <option value="Sports">Sports</option>
+            </select>
+            <select id="sortSelect">
+              <option value="date">Sort by Date</option>
+              <option value="name">Sort by Name</option>
+              <option value="seats">Sort by Seats</option>
+            </select>
+          </div>
+        </section>
+
+        <section id="eventsContainer" class="event-grid"></section>
+      </div>
+    </main>
+
+    <script src="js/events.js"></script>
+  </body>
+</html>
