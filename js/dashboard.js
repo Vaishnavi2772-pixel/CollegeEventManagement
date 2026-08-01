@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const currentStudent = JSON.parse(localStorage.getItem('currentStudent') || 'null');
   const studentName = document.getElementById('studentName');
 
@@ -6,11 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     studentName.textContent = currentStudent?.name || 'Student';
   }
 
-  const events = JSON.parse(localStorage.getItem('events') || '[]');
-  const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
-  const upcoming = events.filter((event) => new Date(event.date) >= new Date()).length;
+  try {
+    const response = await fetch('http://localhost:8080/api/events');
+    const result = await response.json();
+    const events = result[0]?.events || [];
+    const upcoming = events.filter((event) => new Date(event.eventDate) >= new Date()).length;
+    document.getElementById('totalEvents').textContent = events.length || 0;
+    document.getElementById('upcomingEvents').textContent = upcoming || 0;
+  } catch (error) {
+    document.getElementById('totalEvents').textContent = '0';
+    document.getElementById('upcomingEvents').textContent = '0';
+  }
 
-  document.getElementById('totalEvents').textContent = events.length || 0;
-  document.getElementById('registeredEvents').textContent = registrations.length || 0;
-  document.getElementById('upcomingEvents').textContent = upcoming || 0;
+  try {
+    const response = await fetch(`http://localhost:8080/api/registrations?studentId=${currentStudent?.studentId || 0}`);
+    const result = await response.json();
+    document.getElementById('registeredEvents').textContent = result[0]?.registrations?.length || 0;
+  } catch (error) {
+    document.getElementById('registeredEvents').textContent = '0';
+  }
 });

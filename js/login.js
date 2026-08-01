@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
+  if (!form) return;
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearMessages();
 
@@ -13,15 +14,22 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const students = JSON.parse(localStorage.getItem('students') || '[]');
-    const student = students.find((entry) => entry.email === email && entry.password === password);
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        showMessage(result.message || 'Invalid credentials. Please try again.', 'error');
+        return;
+      }
 
-    if (!student) {
-      showMessage('Invalid credentials. Please try again.', 'error');
-      return;
+      localStorage.setItem('currentStudent', JSON.stringify({ studentId: result.student.studentId, email: result.student.email, name: result.student.name }));
+      window.location.href = 'dashboard.html';
+    } catch (error) {
+      showMessage('Unable to reach the server. Please ensure the Java app is running.', 'error');
     }
-
-    localStorage.setItem('currentStudent', JSON.stringify({ email: student.email, name: student.fullName }));
-    window.location.href = 'dashboard.html';
   });
 });

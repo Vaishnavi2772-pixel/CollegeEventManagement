@@ -1,41 +1,38 @@
 # College Event Management System
 
-A complete full-stack college event management application built with HTML5, CSS3, JavaScript, Java, JDBC, and MySQL.
+A complete college event management application built with HTML5, CSS3, JavaScript, Java, JDBC, and MySQL. The project now includes a working student registration flow, event browsing, registration management, contact submissions, and an admin panel.
 
 ## Features
-- Responsive landing page with navigation, hero section, featured events, about section, contact section, and footer.
-- Student registration and login flows with client-side validation.
-- Student dashboard with event statistics and navigation cards.
-- Event listing page with search, filter, sort, registration, and seat management.
-- My Registrations page with cancellation support.
-- Contact form that stores messages in the database.
-- Java JDBC backend with DAO classes for students, events, registrations, contact messages, and admin access.
+- Responsive landing, login, registration, dashboard, events, my registrations, contact, and admin pages
+- Student sign-up and login backed by MySQL through JDBC
+- Event search, filtering, sorting, seat tracking, and registration actions
+- My registrations page with cancellation support
+- Contact form persistence in the database
+- Admin login and event management panel for adding, editing, and deleting events
 
 ## Project Structure
-- index.html
-- login.html
-- register.html
-- dashboard.html
-- events.html
-- my-registrations.html
-- contact.html
-- css/
-- js/
-- java/
-- database/
+- index.html, login.html, register.html, dashboard.html, events.html, my-registrations.html, contact.html, admin.html
+- css/ for styling
+- js/ for frontend interactivity
+- src/com/college/ for Java DAO and server classes
+- database/event_management.sql for the schema and seed data
 
 ## Database Setup
 1. Start MySQL.
 2. Import [database/event_management.sql](database/event_management.sql).
-3. Confirm that the database name is `college_event_management`.
+3. Confirm the database name is event_management.
+4. Update the credentials in [src/com/college/DBConnection.java](src/com/college/DBConnection.java) if your MySQL user/password differ.
 
-## Java Setup
-1. Ensure the MySQL JDBC driver is available in the classpath.
-2. Update the database credentials in [java/DBConnection.java](java/DBConnection.java) if needed.
-3. Compile and run [java/Main.java](java/Main.java).
+## Java Backend Setup
+1. Ensure the MySQL JDBC driver is available in the lib folder.
+2. Compile the Java sources with the driver on the classpath.
+3. Run the app with the included batch file or by launching the Main class.
 
-## How to Run the Frontend
-Open the HTML files in a browser, or serve the project from a simple local web server.
+## Running the Project
+1. Start the Java server by running [run.bat](run.bat) or launching the Main class from the Java project.
+2. Open the app in your browser at http://localhost:8080.
+3. Use the UI to register, log in, browse events, and manage registrations.
 
-## Notes
-The frontend uses localStorage for demo interactions. The Java backend uses JDBC PreparedStatement and MySQL for persistence.
+## Admin Credentials
+- Email: admin@campuspulse.edu
+- Password: admin123

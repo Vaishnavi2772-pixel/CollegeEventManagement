@@ -2,9 +2,9 @@
 -- Database schema, seed data, and sample queries
 -- MySQL 8.x compatible
 
-DROP DATABASE IF EXISTS college_event_management;
-CREATE DATABASE college_event_management;
-USE college_event_management;
+DROP DATABASE IF EXISTS event_management;
+CREATE DATABASE event_management;
+USE event_management;
 
 CREATE TABLE students (
     student_id INT AUTO_INCREMENT PRIMARY KEY,

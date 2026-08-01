@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/login.css" />
+    <style>
+      .admin-shell { padding: 2rem 0 3rem; }
+      .panel { background: var(--white); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+      table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+      th, td { padding: 0.75rem; border-bottom: 1px solid var(--border); text-align: left; }
+      .inline-actions { display: flex; gap: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">CampusPulse</a>
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="events.html">Events</a>
+          <a href="contact.html">Contact</a>
+          <a href="admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-shell">
+      <div class="container">
+        <section id="adminLoginSection" class="panel">
+          <h1>Admin Login</h1>
+          <p>Manage campus events and review student registrations.</p>
+          <form id="adminLoginForm" class="auth-form">
+            <label for="adminEmail">Email</label>
+            <input type="email" id="adminEmail" required />
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" required />
+            <button type="submit" class="btn">Login</button>
+          </form>
+        </section>
+
+        <section id="adminDashboard" class="panel" hidden>
+          <div class="inline-actions" style="justify-content: space-between; align-items: center;">
+            <h2>Admin Dashboard</h2>
+            <button id="logoutAdminBtn" class="btn btn-secondary">Logout</button>
+          </div>
+
+          <form id="eventForm" class="auth-form">
+            <input type="hidden" id="eventId" />
+            <div class="grid-2">
+              <div>
+                <label for="eventName">Event Name</label>
+                <input type="text" id="eventName" required />
+              </div>
+              <div>
+                <label for="category">Category</label>
+                <input type="text" id="category" required />
+              </div>
+            </div>
+            <label for="description">Description</label>
+            <input type="text" id="description" required />
+            <div class="grid-2">
+              <div>
+                <label for="eventDate">Date</label>
+                <input type="date" id="eventDate" required />
+              </div>
+              <div>
+                <label for="venue">Venue</label>
+                <input type="text" id="venue" required />
+              </div>
+            </div>
+            <label for="availableSeats">Available Seats</label>
+            <input type="number" id="availableSeats" min="1" required />
+            <button type="submit" class="btn">Save Event</button>
+          </form>
+
+          <h3>Events</h3>
+          <div id="adminEventsList"></div>
+
+          <h3>Student Registrations</h3>
+          <div id="adminRegistrationsList"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/admin.js"></script>
+  </body>
+</html>

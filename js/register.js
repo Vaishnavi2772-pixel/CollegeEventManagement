@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('registerForm');
+  if (!form) return;
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearMessages();
 
@@ -35,19 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const students = JSON.parse(localStorage.getItem('students') || '[]');
-    const duplicate = students.find((student) => student.email === data.email || student.rollNumber === data.rollNumber);
+    try {
+      const response = await fetch('http://localhost:8080/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        showMessage(result.message || 'Registration failed.', 'error');
+        return;
+      }
 
-    if (duplicate) {
-      showMessage('A student with the same email or roll number already exists.', 'error');
-      return;
+      localStorage.setItem('currentStudent', JSON.stringify({ studentId: result.studentId, email: data.email, name: data.fullName }));
+      showMessage(result.message || 'Registration successful. You can now log in.', 'success');
+      form.reset();
+      setTimeout(() => window.location.href = 'login.html', 800);
+    } catch (error) {
+      showMessage('Unable to reach the server. Please ensure the Java app is running.', 'error');
     }
-
-    students.push({ ...data, id: Date.now() });
-    localStorage.setItem('students', JSON.stringify(students));
-    localStorage.setItem('currentStudent', JSON.stringify({ email: data.email, name: data.fullName }));
-    showMessage('Registration successful. You can now log in.', 'success');
-    form.reset();
-    setTimeout(() => window.location.href = 'login.html', 800);
   });
 });

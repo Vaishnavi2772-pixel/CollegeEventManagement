@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('contactForm');
   if (!form) return;
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearMessages();
 
@@ -23,10 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const messages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
-    messages.push({ ...data, id: Date.now() });
-    localStorage.setItem('contactMessages', JSON.stringify(messages));
-    showMessage('Message sent successfully. We will get back to you soon.', 'success');
-    form.reset();
+    try {
+      const response = await fetch('http://localhost:8080/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        showMessage(result.message || 'Unable to send message.', 'error');
+        return;
+      }
+      showMessage(result.message || 'Message sent successfully. We will get back to you soon.', 'success');
+      form.reset();
+    } catch (error) {
+      showMessage('Unable to reach the server. Please ensure the Java app is running.', 'error');
+    }
   });
 });
