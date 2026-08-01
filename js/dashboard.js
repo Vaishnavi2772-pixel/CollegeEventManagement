@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8080/api/events');
+    const response = await fetch('http://localhost:7000/api/events');
     const result = await response.json();
-    const events = result[0]?.events || [];
+    const events = result.events || [];
     const upcoming = events.filter((event) => new Date(event.eventDate) >= new Date()).length;
     document.getElementById('totalEvents').textContent = events.length || 0;
     document.getElementById('upcomingEvents').textContent = upcoming || 0;
@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/api/registrations?studentId=${currentStudent?.studentId || 0}`);
+    const response = await fetch(`http://localhost:7000/api/registrations?studentId=${currentStudent?.studentId || 0}`);
     const result = await response.json();
-    document.getElementById('registeredEvents').textContent = result[0]?.registrations?.length || 0;
+    document.getElementById('registeredEvents').textContent = result.registrations?.length || 0;
   } catch (error) {
     document.getElementById('registeredEvents').textContent = '0';
   }

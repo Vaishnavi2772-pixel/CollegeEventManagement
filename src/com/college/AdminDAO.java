@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminDAO {
-    private static final String ADMIN_EMAIL = "admin@campuspulse.edu";
-    private static final String ADMIN_PASSWORD = "admin123";
+    private static final String ADMIN_EMAIL = "admin@college.edu";
+    private static final String ADMIN_PASSWORD = "Admin@123";
 
     public boolean authenticate(String email, String password) {
         return ADMIN_EMAIL.equals(email) && ADMIN_PASSWORD.equals(password);

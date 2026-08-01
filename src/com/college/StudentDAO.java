@@ -40,6 +40,26 @@ public class StudentDAO {
         }
     }
 
+    public boolean emailExists(String email) throws SQLException {
+        String sql = "SELECT 1 FROM students WHERE email = ? LIMIT 1";
+        try (Connection connection = DBConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, email);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        }
+    }
+
+    public boolean rollNumberExists(String rollNumber) throws SQLException {
+        String sql = "SELECT 1 FROM students WHERE roll_number = ? LIMIT 1";
+        try (Connection connection = DBConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, rollNumber);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        }
+    }
+
     public Student authenticate(String email, String password) throws SQLException {
         String sql = "SELECT * FROM students WHERE email = ? AND password = ?";
         try (Connection connection = DBConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {

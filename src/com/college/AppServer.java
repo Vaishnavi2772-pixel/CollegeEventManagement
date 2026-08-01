@@ -59,6 +59,7 @@ public class AppServer {
         }
 
         if (!Files.exists(requestedPath)) {
+            setCorsHeaders(exchange);
             writeText(exchange, 404, "Not found");
             return;
         }
@@ -66,6 +67,7 @@ public class AppServer {
         byte[] content = Files.readAllBytes(requestedPath);
         String contentType = determineContentType(requestedPath);
         exchange.getResponseHeaders().set("Content-Type", contentType);
+        setCorsHeaders(exchange);
         exchange.sendResponseHeaders(200, content.length);
         try (var out = exchange.getResponseBody()) {
             out.write(content);
@@ -73,6 +75,10 @@ public class AppServer {
     }
 
     private void handleRegister(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         if (!"POST".equals(exchange.getRequestMethod())) {
             writeJson(exchange, 405, "{\"success\":false,\"message\":\"Method not allowed\"}");
             return;
@@ -103,8 +109,12 @@ public class AppServer {
 
         try {
             StudentDAO studentDAO = new StudentDAO();
-            if (studentDAO.exists(email, rollNumber)) {
-                writeJson(exchange, 409, jsonError("A student with this email or roll number already exists."));
+            if (studentDAO.rollNumberExists(rollNumber)) {
+                writeJson(exchange, 409, jsonError("This roll number is already registered."));
+                return;
+            }
+            if (studentDAO.emailExists(email)) {
+                writeJson(exchange, 409, jsonError("This email is already registered."));
                 return;
             }
             int studentId = studentDAO.createStudent(new Student(0, fullName, rollNumber, department, Integer.parseInt(yearValue), email, phone, password));
@@ -115,6 +125,10 @@ public class AppServer {
     }
 
     private void handleLogin(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         if (!"POST".equals(exchange.getRequestMethod())) {
             writeJson(exchange, 405, "{\"success\":false,\"message\":\"Method not allowed\"}");
             return;
@@ -140,12 +154,16 @@ public class AppServer {
     }
 
     private void handleEvents(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         String method = exchange.getRequestMethod();
         if ("GET".equals(method)) {
             try {
                 EventDAO eventDAO = new EventDAO();
                 var events = eventDAO.getAllEvents();
-                StringBuilder builder = new StringBuilder("[{\"events\":[");
+                StringBuilder builder = new StringBuilder("{\"success\":true,\"events\":[");
                 for (int i = 0; i < events.size(); i++) {
                     Event event = events.get(i);
                     if (i > 0) {
@@ -212,17 +230,17 @@ public class AppServer {
     }
 
     private void handleRegistrations(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         String method = exchange.getRequestMethod();
         if ("GET".equals(method)) {
-            String studentIdParam = exchange.getRequestURI().getQuery();
-            int studentId = 0;
-            if (studentIdParam != null && studentIdParam.startsWith("studentId=")) {
-                studentId = Integer.parseInt(studentIdParam.substring("studentId=".length()));
-            }
+            int studentId = parseIntegerQueryParam(exchange, "studentId", 0);
             try {
                 RegistrationDAO registrationDAO = new RegistrationDAO();
                 var registrations = registrationDAO.getStudentRegistrations(studentId);
-                StringBuilder builder = new StringBuilder("[{\"registrations\":[");
+                StringBuilder builder = new StringBuilder("{\"success\":true,\"registrations\":[");
                 for (int i = 0; i < registrations.size(); i++) {
                     Registration registration = registrations.get(i);
                     if (i > 0) {
@@ -267,6 +285,10 @@ public class AppServer {
     }
 
     private void handleContact(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         if (!"POST".equals(exchange.getRequestMethod())) {
             writeJson(exchange, 405, "{\"success\":false,\"message\":\"Method not allowed\"}");
             return;
@@ -284,6 +306,10 @@ public class AppServer {
     }
 
     private void handleAdminLogin(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         if (!"POST".equals(exchange.getRequestMethod())) {
             writeJson(exchange, 405, "{\"success\":false,\"message\":\"Method not allowed\"}");
             return;
@@ -301,12 +327,16 @@ public class AppServer {
     }
 
     private void handleAdminEvents(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         String method = exchange.getRequestMethod();
         try {
             EventDAO eventDAO = new EventDAO();
             if ("GET".equals(method)) {
                 var events = eventDAO.getAllEvents();
-                StringBuilder builder = new StringBuilder("[{\"events\":[");
+                StringBuilder builder = new StringBuilder("{\"success\":true,\"events\":[");
                 for (int i = 0; i < events.size(); i++) {
                     Event event = events.get(i);
                     if (i > 0) {
@@ -355,6 +385,10 @@ public class AppServer {
     }
 
     private void handleAdminRegistrations(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            writeOptionsResponse(exchange);
+            return;
+        }
         if (!"GET".equals(exchange.getRequestMethod())) {
             writeJson(exchange, 405, "{\"success\":false,\"message\":\"Method not allowed\"}");
             return;
@@ -362,7 +396,7 @@ public class AppServer {
         try {
             AdminDAO adminDAO = new AdminDAO();
             var registrations = adminDAO.getAllRegistrations();
-            StringBuilder builder = new StringBuilder("[{\"registrations\":[");
+            StringBuilder builder = new StringBuilder("{\"success\":true,\"registrations\":[");
             for (int i = 0; i < registrations.size(); i++) {
                 if (i > 0) {
                     builder.append(',');
@@ -374,6 +408,24 @@ public class AppServer {
         } catch (Exception exception) {
             writeJson(exchange, 500, jsonError("Database error: " + exception.getMessage()));
         }
+    }
+
+    private int parseIntegerQueryParam(HttpExchange exchange, String name, int defaultValue) {
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null || query.isBlank()) {
+            return defaultValue;
+        }
+        for (String pair : query.split("&")) {
+            String[] parts = pair.split("=", 2);
+            if (parts.length == 2 && parts[0].equals(name)) {
+                try {
+                    return Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ignored) {
+                    return defaultValue;
+                }
+            }
+        }
+        return defaultValue;
     }
 
     private Path resolvePath(String path) {
@@ -458,6 +510,7 @@ public class AppServer {
     private void writeJson(HttpExchange exchange, int status, String payload) throws IOException {
         byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+        setCorsHeaders(exchange);
         exchange.sendResponseHeaders(status, bytes.length);
         try (var out = exchange.getResponseBody()) {
             out.write(bytes);
@@ -467,9 +520,22 @@ public class AppServer {
     private void writeText(HttpExchange exchange, int status, String payload) throws IOException {
         byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+        setCorsHeaders(exchange);
         exchange.sendResponseHeaders(status, bytes.length);
         try (var out = exchange.getResponseBody()) {
             out.write(bytes);
         }
+    }
+
+    private void writeOptionsResponse(HttpExchange exchange) throws IOException {
+        setCorsHeaders(exchange);
+        exchange.getResponseHeaders().set("Allow", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.sendResponseHeaders(204, -1);
+    }
+
+    private void setCorsHeaders(HttpExchange exchange) {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
     }
 }

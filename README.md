@@ -30,7 +30,7 @@ A complete college event management application built with HTML5, CSS3, JavaScri
 
 ## Running the Project
 1. Start the Java server by running [run.bat](run.bat) or launching the Main class from the Java project.
-2. Open the app in your browser at http://localhost:8080.
+2. Open the app in your browser at http://localhost:7000.
 3. Use the UI to register, log in, browse events, and manage registrations.
 
 ## Admin Credentials

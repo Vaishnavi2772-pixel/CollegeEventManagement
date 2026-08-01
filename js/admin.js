@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('adminPassword').value.trim();
 
     try {
-      const response = await fetch('http://localhost:8080/api/admin/login', {
+      const response = await fetch('http://localhost:7000/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      const response = payload.eventId ? await fetch('http://localhost:8080/api/admin/events', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }) : await fetch('http://localhost:8080/api/admin/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const response = payload.eventId ? await fetch('http://localhost:7000/api/admin/events', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }) : await fetch('http://localhost:7000/api/admin/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const result = await response.json();
       if (!response.ok || !result.success) {
         alert(result.message || 'Unable to save event.');
@@ -74,13 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadAdminData() {
     try {
       const [eventsResponse, registrationsResponse] = await Promise.all([
-        fetch('http://localhost:8080/api/admin/events'),
-        fetch('http://localhost:8080/api/admin/registrations')
+        fetch('http://localhost:7000/api/admin/events'),
+        fetch('http://localhost:7000/api/admin/registrations')
       ]);
       const eventsResult = await eventsResponse.json();
       const registrationsResult = await registrationsResponse.json();
-      renderEvents(eventsResult[0]?.events || []);
-      renderRegistrations(registrationsResult[0]?.registrations || []);
+      renderEvents(eventsResult.events || []);
+      renderRegistrations(registrationsResult.registrations || []);
     } catch (error) {
       eventsList.innerHTML = '<p>Unable to load data.</p>';
       registrationsList.innerHTML = '<p>Unable to load data.</p>';
@@ -124,9 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editButton = event.target.closest('[data-edit-id]');
     if (editButton) {
       const eventId = Number(editButton.getAttribute('data-edit-id'));
-      const response = await fetch('http://localhost:8080/api/admin/events');
+      const response = await fetch('http://localhost:7000/api/admin/events');
       const result = await response.json();
-      const target = (result[0]?.events || []).find((entry) => entry.eventId === eventId);
+      const target = (result.events || []).find((entry) => entry.eventId === eventId);
       if (target) {
         document.getElementById('eventId').value = target.eventId;
         document.getElementById('eventName').value = target.eventName;
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteButton = event.target.closest('[data-delete-id]');
     if (deleteButton) {
       const eventId = Number(deleteButton.getAttribute('data-delete-id'));
-      const response = await fetch(`http://localhost:8080/api/admin/events?eventId=${eventId}`, { method: 'DELETE' });
+      const response = await fetch(`http://localhost:7000/api/admin/events?eventId=${eventId}`, { method: 'DELETE' });
       const result = await response.json();
       if (!response.ok || !result.success) {
         alert(result.message || 'Unable to delete event.');

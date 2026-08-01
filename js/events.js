@@ -7,9 +7,9 @@ function formatDate(value) {
 
 async function loadEvents() {
   try {
-    const response = await fetch('http://localhost:8080/api/events');
+    const response = await fetch('http://localhost:7000/api/events');
     const result = await response.json();
-    const events = result[0]?.events || [];
+    const events = result.events || [];
     allEvents = events;
     renderEvents();
   } catch (error) {
@@ -26,9 +26,9 @@ async function loadRegistrations() {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/api/registrations?studentId=${currentStudent.studentId || 0}`);
+    const response = await fetch(`http://localhost:7000/api/registrations?studentId=${currentStudent.studentId || 0}`);
     const result = await response.json();
-    currentRegistrations = result[0]?.registrations || [];
+    currentRegistrations = result.registrations || [];
     renderRegistrations();
   } catch (error) {
     console.error(error);
@@ -93,7 +93,7 @@ async function registerForEvent(eventId) {
   }
 
   try {
-    const response = await fetch('http://localhost:8080/api/events', {
+    const response = await fetch('http://localhost:7000/api/events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ studentId: currentStudent?.studentId || 0, eventId })
@@ -139,7 +139,7 @@ function renderRegistrations() {
 
 async function cancelRegistration(registrationId) {
   try {
-    const response = await fetch('http://localhost:8080/api/registrations', {
+    const response = await fetch('http://localhost:7000/api/registrations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ registrationId })
